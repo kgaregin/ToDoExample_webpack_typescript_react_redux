@@ -1,0 +1,27 @@
+{
+  "name": "webpack_react_todo",
+  "version": "1.0.0",
+  "description": "todo app example built using webpack and react",
+  "main": "index.js",
+  "scripts": {
+    "test": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kgaregin/webpack_react_todo.git"
+  },
+  "keywords": [
+    "todo",
+    "react",
+    "webpack"
+  ],
+  "author": "K.Garegin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kgaregin/webpack_react_todo/issues"
+  },
+  "homepage": "https://github.com/kgaregin/webpack_react_todo#readme",
+  "devDependencies": {
+    "webpack": "^2.4.1"
+  }
+}
