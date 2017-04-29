@@ -1,6 +1,9 @@
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 
-export default class ToDoList extends Component {
+export interface ToDoListState { toDoList: {value: string, done: boolean}[]; filter: string; }
+
+export default class ToDoList extends Component<undefined, ToDoListState> {
   constructor(){
     super();
     this.state = {
@@ -16,8 +19,8 @@ export default class ToDoList extends Component {
      }
   }
 
-  handleToDoInputChange(index, ev){
-    let newValue = ev.target.value;
+  handleToDoInputChange(index: number, ev: React.FormEvent<HTMLInputElement>){
+    let newValue = (ev.target as HTMLInputElement).value;
     let newState = this.state;
     newState.toDoList[index].value = newValue;
     this.setState(newState)
@@ -25,14 +28,14 @@ export default class ToDoList extends Component {
 
   toDoList(){
     // onChange={this.setState(this.state)}
-    let toDoList = this.state.toDoList.map((item, index) => {
+    let toDoList:JSX.Element[] = this.state.toDoList.map((item, index) => {
             return (
               <tr key={index}>
                 <td><input type="checkbox" onChange={this.toggleStatus.bind(this, index)} checked={item.done} /></td>
                 <td><input type="text" value={item.value} onChange={this.handleToDoInputChange.bind(this, index)} /></td>
               </tr>)
             })
-    let toDoListFiltered = toDoList.filter((item, index) => this.state.filter === "SHOW_ALL" || !this.state.toDoList[index].done);
+    let toDoListFiltered:JSX.Element[] = toDoList.filter((item, index) => this.state.filter === "SHOW_ALL" || !this.state.toDoList[index].done);
     return (
       <table>
         <thead>
@@ -44,7 +47,7 @@ export default class ToDoList extends Component {
           </tr>
           :
           <tr>
-            <th colSpan="2">All done!</th>
+            <th colSpan={2}>All done!</th>
           </tr>
           }
         </thead>
@@ -54,7 +57,7 @@ export default class ToDoList extends Component {
       </table>)
   }
 
-  toggleStatus(index){
+  toggleStatus(index:number){
     let state = this.state;
     state.toDoList[index].done = !state.toDoList[index].done;
     this.setState(state);
@@ -66,8 +69,9 @@ export default class ToDoList extends Component {
     this.setState({toDoList});
   }
 
-  toggleFilter(ev){
-    let checked = ev.target.checked;
+  toggleFilter(ev: React.FormEvent<HTMLInputElement>){
+    let target = ev.target as HTMLInputElement;
+    let checked = target.checked;
     this.setState({filter: checked ? "SHOW_UNDONE" : "SHOW_ALL"})
   }
 
