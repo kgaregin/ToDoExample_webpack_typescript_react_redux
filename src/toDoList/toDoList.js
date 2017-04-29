@@ -16,8 +16,23 @@ export default class ToDoList extends Component {
      }
   }
 
+  handleToDoInputChange(index, ev){
+    let newValue = ev.target.value;
+    let newState = this.state;
+    newState.toDoList[index].value = newValue;
+    this.setState(newState)
+  }
+
   toDoList(){
-    let toDoListFiltered = this.state.toDoList.filter((item) => this.state.filter === "SHOW_ALL" || !item.done);
+    // onChange={this.setState(this.state)}
+    let toDoList = this.state.toDoList.map((item, index) => {
+            return (
+              <tr key={index}>
+                <td><input type="checkbox" onChange={this.toggleStatus.bind(this, index)} checked={item.done} /></td>
+                <td><input type="text" value={item.value} onChange={this.handleToDoInputChange.bind(this, index)} /></td>
+              </tr>)
+            })
+    let toDoListFiltered = toDoList.filter((item, index) => this.state.filter === "SHOW_ALL" || !this.state.toDoList[index].done);
     return (
       <table>
         <thead>
@@ -34,15 +49,7 @@ export default class ToDoList extends Component {
           }
         </thead>
         <tbody>
-         {
-          toDoListFiltered.map((item, index) => {
-            return (
-              <tr key={index}>
-                <td><input type="checkbox" onChange={this.toggleStatus.bind(this, index)} checked={item.done} /></td>
-                <td><input type="text" value={item.value} /></td>
-              </tr>)
-            })
-          }
+         {toDoListFiltered}
         </tbody>
       </table>)
   }
