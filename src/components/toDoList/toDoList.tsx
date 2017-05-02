@@ -1,46 +1,63 @@
-import * as React from 'react';
-import { Component } from 'react';
+import * as React from "react";
+import { Component } from "react";
 
-export interface ToDoListState { toDoList: {value: string, done: boolean}[]; filter: string; }
+export interface IToDoListItem { done: boolean; value: string; }
+export interface IToDoListState { filter: string; toDoList: IToDoListItem[]; }
 
-export default class ToDoList extends Component<undefined, ToDoListState> {
-  constructor(){
+export default class ToDoList extends Component<undefined, IToDoListState> {
+  constructor() {
     super();
     this.state = {
-     toDoList: [this.getNewItem()],
-     filter: "SHOW_ALL"
+     filter: "SHOW_ALL",
+     toDoList: [this.getNewToDoListItem()],
     };
   }
 
-  getNewItem(){
+  public render(): JSX.Element {
+    const toDoList: JSX.Element = this.toDoList();
+    return (
+      <div>
+        <h1>ToDo list:</h1>
+        {toDoList}
+        <br/>
+        <button type="button" onClick={this.addListItem.bind(this)}>Add new item</button>
+        <label>
+          <input type="checkbox" onChange={this.toggleFilter.bind(this)} />
+          Hide done items
+        </label>
+      </div>
+    );
+  }
+
+  protected getNewToDoListItem(): IToDoListItem {
     return {
+      done: false,
       value: "",
-      done: false
-     }
+     };
   }
 
-  handleToDoInputChange(index: number, ev: React.FormEvent<HTMLInputElement>){
-    let newValue = (ev.target as HTMLInputElement).value;
-    let newState = this.state;
+  protected handleToDoInputChange(index: number, ev: React.FormEvent<HTMLInputElement>): void {
+    const newValue: string = (ev.target as HTMLInputElement).value;
+    const newState: IToDoListState = this.state;
     newState.toDoList[index].value = newValue;
-    this.setState(newState)
+    this.setState(newState);
   }
 
-  toDoList(){
-    // onChange={this.setState(this.state)}
-    let toDoList:JSX.Element[] = this.state.toDoList.map((item, index) => {
+  protected toDoList(): JSX.Element {
+    const toDoList: JSX.Element[] = this.state.toDoList.map((item: IToDoListItem, index: number) => {
             return (
               <tr key={index}>
                 <td><input type="checkbox" onChange={this.toggleStatus.bind(this, index)} checked={item.done} /></td>
-                <td><input type="text" value={item.value} onChange={this.handleToDoInputChange.bind(this, index)} /></td>
-              </tr>)
-            })
-    let toDoListFiltered:JSX.Element[] = toDoList.filter((item, index) => this.state.filter === "SHOW_ALL" || !this.state.toDoList[index].done);
+                <td><input type="text" value={item.value} onChange={this.handleToDoInputChange.bind(this, index)}/></td>
+              </tr>);
+            });
+    const toDoListFiltered: JSX.Element[] = toDoList.filter(
+      (item: JSX.Element, index: number) => this.state.filter === "SHOW_ALL" || !this.state.toDoList[index].done);
     return (
       <table>
         <thead>
           {
-            toDoListFiltered.length > 0 ? 
+            toDoListFiltered.length > 0 ?
           <tr>
             <th>Done</th>
             <th>ToDo</th>
@@ -54,40 +71,24 @@ export default class ToDoList extends Component<undefined, ToDoListState> {
         <tbody>
          {toDoListFiltered}
         </tbody>
-      </table>)
+      </table>);
   }
 
-  toggleStatus(index:number){
-    let state = this.state;
+  protected toggleStatus(index: number): void {
+    const state: IToDoListState = this.state;
     state.toDoList[index].done = !state.toDoList[index].done;
     this.setState(state);
   }
 
-  addListItem(){
-    let toDoList = this.state.toDoList;
-    toDoList.push(this.getNewItem());
+  protected addListItem(): void {
+    const toDoList: IToDoListItem[] = this.state.toDoList;
+    toDoList.push(this.getNewToDoListItem());
     this.setState({toDoList});
   }
 
-  toggleFilter(ev: React.FormEvent<HTMLInputElement>){
-    let target = ev.target as HTMLInputElement;
-    let checked = target.checked;
-    this.setState({filter: checked ? "SHOW_UNDONE" : "SHOW_ALL"})
-  }
-
-  render() {
-    let toDoList = this.toDoList();
-    return (
-      <div>
-        <h1>ToDo list:</h1>
-        {toDoList}
-        <br/>
-        <button type="button" onClick={this.addListItem.bind(this)}>Add new item</button>
-        <label>
-          <input type="checkbox" onChange={this.toggleFilter.bind(this)} />
-          Hide done items
-        </label>
-      </div>
-    )
+  protected toggleFilter(ev: React.FormEvent<HTMLInputElement>): void {
+    const target: HTMLInputElement = ev.target as HTMLInputElement;
+    const checked: boolean = target.checked;
+    this.setState({filter: checked ? "SHOW_UNDONE" : "SHOW_ALL"});
   }
 }

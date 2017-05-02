@@ -15,14 +15,22 @@ const config = {
   },
   module: {
     rules: [{
-      exclude: /(node_modules|bower_components)/,
-      test: /\.tsx?$/,
-      loader: "awesome-typescript-loader"
+      enforce: "pre",
+      test: /\.tsx$/,
+      exclude: /node_modules/,
+      loader: "tslint-loader",
+      options:{
+         tsConfigFile: 'tslint.json'
+      }
     }, {
       exclude: /(node_modules|bower_components)/,
       enforce: "pre",
-      test: /\.js$/,
+      test: /\.tsx$/,
       loader: "source-map-loader"
+    }, {
+      exclude: /(node_modules|bower_components)/,
+      test: /\.tsx?$/,
+      loader: "awesome-typescript-loader"
     }]
   },
   externals: {
