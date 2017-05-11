@@ -1,2 +1,2 @@
-# webpack_react_todo
-todo app example built using webpack and react
+# ToDoExample_webpack_typescript_react_redux
+todo app example built using webpack, typescript, react & redux
