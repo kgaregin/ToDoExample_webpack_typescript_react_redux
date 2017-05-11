@@ -42,7 +42,6 @@ function input(index:number, text: string): IAction {
 }
 
 function setVisibilityFilter(filter: string): IAction {
-  console.log(filter)
   return { type: "SET_VISIBILITY_FILTER", filter }
 }
 
