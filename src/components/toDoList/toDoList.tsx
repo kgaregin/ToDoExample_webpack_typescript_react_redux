@@ -1,13 +1,13 @@
 import * as React from "react";
 import { Component } from "react";
+import { connect } from "react-redux";
+import { Dispatch } from "redux";
+import { addTodo, input, setVisibilityFilter, toggleTodo } from "../../reducers";
 
-export default class ToDoList extends Component<undefined, IToDoListState> {
-  constructor() {
-    super();
-    this.state = {
-     filter: "SHOW_ALL",
-     toDoList: [this.getNewToDoListItem()],
-    };
+// raw (not connected) ToDo component
+class ToDoListRaw extends Component<IToDoListProps, undefined> {
+  constructor(props: IToDoListProps) {
+    super(props);
   }
 
   public render(): JSX.Element {
@@ -17,7 +17,7 @@ export default class ToDoList extends Component<undefined, IToDoListState> {
         <h1>ToDo list:</h1>
         {toDoList}
         <br/>
-        <button type="button" onClick={this.addListItem.bind(this)}>Add new item</button>
+        <button type="button" onClick={this.props.addTodo}>Add new item</button>
         <label>
           <input type="checkbox" onChange={this.toggleFilter.bind(this)} />
           Hide done items
@@ -26,30 +26,36 @@ export default class ToDoList extends Component<undefined, IToDoListState> {
     );
   }
 
-  protected getNewToDoListItem(): IToDoListItem {
-    return {
-      done: false,
-      value: "",
-     };
+  protected toggleFilter(ev: React.FormEvent<HTMLInputElement>): void {
+    const filter = (ev.target as HTMLInputElement).checked ? "SHOW_UNDONE" : "SHOW_ALL";
+    this.props.setVisibilityFilter(filter);
   }
 
   protected handleToDoInputChange(index: number, ev: React.FormEvent<HTMLInputElement>): void {
     const newValue: string = (ev.target as HTMLInputElement).value;
-    const newState: IToDoListState = this.state;
-    newState.toDoList[index].value = newValue;
-    this.setState(newState);
+    this.props.input(index, newValue);
   }
 
   protected toDoList(): JSX.Element {
-    const toDoList: JSX.Element[] = this.state.toDoList.map((item: IToDoListItem, index: number) => {
+    const toDoList: JSX.Element[] = this.props.toDoList.map((item: IToDoListItem, index: number) => {
             return (
               <tr key={index}>
-                <td><input type="checkbox" onChange={this.toggleStatus.bind(this, index)} checked={item.done} /></td>
-                <td><input type="text" value={item.value} onChange={this.handleToDoInputChange.bind(this, index)}/></td>
+                <td>
+                  <input
+                    type="checkbox"
+                    onChange={this.props.toggleTodo.bind(this, index)}
+                    checked={item.done}/>
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    value={item.value}
+                    onChange={this.handleToDoInputChange.bind(this, index)}/>
+                </td>
               </tr>);
             });
     const toDoListFiltered: JSX.Element[] = toDoList.filter(
-      (item: JSX.Element, index: number) => this.state.filter === "SHOW_ALL" || !this.state.toDoList[index].done);
+      (item: JSX.Element, index: number) => this.props.filter === "SHOW_ALL" || !this.props.toDoList[index].done);
     return (
       <table>
         <thead>
@@ -70,22 +76,21 @@ export default class ToDoList extends Component<undefined, IToDoListState> {
         </tbody>
       </table>);
   }
-
-  protected toggleStatus(index: number): void {
-    const state: IToDoListState = this.state;
-    state.toDoList[index].done = !state.toDoList[index].done;
-    this.setState(state);
-  }
-
-  protected addListItem(): void {
-    const toDoList: IToDoListItem[] = this.state.toDoList;
-    toDoList.push(this.getNewToDoListItem());
-    this.setState({toDoList});
-  }
-
-  protected toggleFilter(ev: React.FormEvent<HTMLInputElement>): void {
-    const target: HTMLInputElement = ev.target as HTMLInputElement;
-    const checked: boolean = target.checked;
-    this.setState({filter: checked ? "SHOW_UNDONE" : "SHOW_ALL"});
-  }
 }
+
+// pass redux state to component props
+const mapStateToProps = (state: IToDoListState) => {
+  return {
+    filter: state.filter,
+    toDoList: state.toDoList,
+  };
+};
+
+// pass wrapped action creators to component props
+const mapDispatchToProps = { addTodo, input, setVisibilityFilter, toggleTodo };
+
+// connect redux store with react component
+const ToDoList = connect(mapStateToProps, mapDispatchToProps)(ToDoListRaw);
+
+// export connected ToDo component
+export default ToDoList;
