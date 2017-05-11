@@ -1,9 +1,6 @@
 import * as React from "react";
 import { Component } from "react";
 
-export interface IToDoListItem { done: boolean; value: string; }
-export interface IToDoListState { filter: string; toDoList: IToDoListItem[]; }
-
 export default class ToDoList extends Component<undefined, IToDoListState> {
   constructor() {
     super();
